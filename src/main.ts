@@ -142,15 +142,15 @@ class CircleProgressCard extends LitElement {
             stroke-dashoffset: var(--stroke-offset);
           }
           circle.off {
-            stroke: var(--card-icon-color-off, white);
+            stroke: var(--card-icon-color-off, var(--disabled-text-color));
           }
           circle.on {
-            stroke: var(--card-icon-color-on, black);
+            stroke: var(--card-icon-color-on, var(--paper-item-icon-color, #44739e));
           }
           path.off,
           text.off,
           text.off tspan{
-            fill: var(--card-icon-color-off, white);
+            fill: var(--card-icon-color-off, var(--disabled-text-color));
           }
           path.on,
           text.on,

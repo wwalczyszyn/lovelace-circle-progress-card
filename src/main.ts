@@ -155,7 +155,7 @@ class CircleProgressCard extends LitElement {
           path.on,
           text.on,
           text.on tspan {
-            fill: var(--card-icon-color-on, black);
+            fill: var(--card-icon-color-on, var(--primary-text-color));
           }
           text {
             font-size: 16px;

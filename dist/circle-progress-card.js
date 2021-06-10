@@ -23,12 +23,15 @@ const t="undefined"!=typeof window&&null!=window.customElements&&void 0!==window
           </text>
         </svg>
         ${D?R`
-        <ha-icon id="progress-icon" icon="${U}" style="color: ${H}; --mdc-icon-size: ${j}%;"></ha-icon>`:""}
+        <div class="icon-wrapper" style="--icon-size: ${j}%;">
+          <ha-icon id="progress-icon" icon="${U}" style="color: ${H}; --mdc-icon-size: 100%;"></ha-icon>
+        </div>`:""}
       </div>
     </ha-card>
     `}_evalTemplate(t,e){try{return new Function("states","entity","user","hass","html",`'use strict'; ${e}`).call(this,this.hass.states,t,this.hass.user,this.hass,R)}catch(t){const s=e.length<=100?e.trim():`${e.trim().substring(0,98)}...`;throw t.message=`${t.name}: ${t.message} in '${s}'`,t.name="CircleProgressCardJSTemplateError",t}}_getTemplateOrValue(t,e){if(["number","boolean"].includes(typeof e))return e;if(!e)return e;if("object"==typeof e)return Object.keys(e).forEach((s=>{e[s]=this._getTemplateOrValue(t,e[s])})),e;const s=e.trim();return"[[["===s.substring(0,3)&&"]]]"===s.slice(-3)?this._evalTemplate(t,s.slice(3,-3)):e}static get styles(){return X`
       .wrapper {
         margin: calc((100% - var(--size)) / 2);
+        overflow: hidden;
       }
       circle {
         stroke-width: var(--stroke-size);
@@ -68,13 +71,13 @@ const t="undefined"!=typeof window&&null!=window.customElements&&void 0!==window
       circle.animate-progress {
         animation: animate-progress 0.8s;
       }
-      ha-icon#progress-icon {
+      .icon-wrapper {
         position: absolute;
         width: 100%;
         height: 100%;
-        top: calc(50% - var(--mdc-icon-size) / 2);
-        left: calc(50% - var(--mdc-icon-size) / 2);
-        right: auto;
-        bottom: auto;
+        top: 0;
+        left: 0;
+        padding: calc(50% - var(--icon-size) / 2);
+        box-sizing: border-box;
       }
     `}}!function(t,e,s,i){var n,r=arguments.length,o=r<3?e:null===i?i=Object.getOwnPropertyDescriptor(e,s):i;if("object"==typeof Reflect&&"function"==typeof Reflect.decorate)o=Reflect.decorate(t,e,s,i);else for(var a=t.length-1;a>=0;a--)(n=t[a])&&(o=(r<3?n(o):r>3?n(e,s,o):n(e,s))||o);r>3&&o&&Object.defineProperty(e,s,o)}([(t,e)=>void 0!==e?((t,e,s)=>{e.constructor.createProperty(s,t)})(tt,t,e):J(tt,t)],st.prototype,"hass",void 0),customElements.get("circle-progress-card")||(customElements.define("circle-progress-card",st),console.info(`%cCIRCLE-PROGRESS-CARD ${et} IS INSTALLED`,"color: green; font-weight: bold",""));

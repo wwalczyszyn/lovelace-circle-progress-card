@@ -146,7 +146,9 @@ class CircleProgressCard extends LitElement {
           </text>
         </svg>
         ${showIcon ? html`
-        <ha-icon id="progress-icon" icon="${icon}" style="color: ${iconColor}; --mdc-icon-size: ${iconSize}%;"></ha-icon>` : ''}
+        <div class="icon-wrapper" style="--icon-size: ${iconSize}%;">
+          <ha-icon id="progress-icon" icon="${icon}" style="color: ${iconColor}; --mdc-icon-size: 100%;"></ha-icon>
+        </div>` : ''}
       </div>
     </ha-card>
     `;
@@ -192,6 +194,7 @@ class CircleProgressCard extends LitElement {
     return css`
       .wrapper {
         margin: calc((100% - var(--size)) / 2);
+        overflow: hidden;
       }
       circle {
         stroke-width: var(--stroke-size);
@@ -231,14 +234,14 @@ class CircleProgressCard extends LitElement {
       circle.animate-progress {
         animation: animate-progress 0.8s;
       }
-      ha-icon#progress-icon {
+      .icon-wrapper {
         position: absolute;
         width: 100%;
         height: 100%;
-        top: calc(50% - var(--mdc-icon-size) / 2);
-        left: calc(50% - var(--mdc-icon-size) / 2);
-        right: auto;
-        bottom: auto;
+        top: 0;
+        left: 0;
+        padding: calc(50% - var(--icon-size) / 2);
+        box-sizing: border-box;
       }
     `;
   }

@@ -1,6 +1,7 @@
 import { LitElement, html, css, property } from "lit-element";
 
 import pjson from "../package.json";
+import handleClick from './handleClick';
 
 class CardConfig {
   entity?: string;
@@ -21,6 +22,7 @@ class CardConfig {
   icon_size?: number;
   animation_type?: string; // load, wrap, none
   animation_time?: string;
+  tap_action?: TapActionConfig;
 }
 
 class ColorConfig {
@@ -37,6 +39,15 @@ class ShowConfig {
   track?: boolean;
   background?: boolean;
   shadow?: boolean;
+}
+
+class TapActionConfig {
+  entity?: string;
+  action?: string;
+  navigation_path?: string;
+  service?: string;
+  service_data?: any;
+  url?: string;
 }
 
 class CircleProgressCard extends LitElement {
@@ -135,8 +146,11 @@ class CircleProgressCard extends LitElement {
     const animationType = this._getTemplateOrValue(this._state, this._config.animation_type) ?? 'load';
     const animationTime = this._getTemplateOrValue(this._state, this._config.animation_time) ?? '0.8s';
 
+    const hasTapAction = this._config.tap_action && this._config.tap_action?.action !== 'none';
+
     return html`
-    <ha-card style="${showBackground ? '' : 'background: none; box-shadow: none;'}">
+    <ha-card style="${showBackground ? '' : 'background: none; box-shadow: none;'} ${hasTapAction ? 'cursor: pointer;' : ''}"
+    @click=${e => this._handleClick(e, this._config.tap_action?.entity ?? this._config.entity, hasTapAction)}>
       <div class="wrapper" style="
       --animation-type: animate-${animationType};
       --animation-time: ${animationTime};
@@ -206,6 +220,13 @@ class CircleProgressCard extends LitElement {
       return this._evalTemplate(state, trimmed.slice(3, -3));
     } else {
       return value;
+    }
+  }
+
+  private _handleClick(e, entity, hasTapAction) {
+    if (hasTapAction) {
+      e.stopPropagation();
+      handleClick(this, this.hass, this._config, this._config.tap_action, entity.entity_id || entity);
     }
   }
 

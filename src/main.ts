@@ -11,13 +11,16 @@ class CardConfig {
   unit?: string;
   attribute?: string;
   value?: number | string;
+  value_position?: string; // inside, below
   min?: number;
   max?: number;
-  string_value?: string;
-  stroke_size?: number | string;
+  value_string?: string;
+  thickness?: number | string;
   size?: number;
   font_size?: number;
   icon_size?: number;
+  animation_type?: string; // load, wrap, none
+  animation_time?: string;
 }
 
 class ColorConfig {
@@ -74,7 +77,7 @@ class CircleProgressCard extends LitElement {
 
     var min = this._config.min;
     var max = this._config.max;
-    var valueString = this._getTemplateOrValue(this._state, this._config.string_value);
+    var valueString = this._getTemplateOrValue(this._state, this._config.value_string);
 
     if (typeof value == 'number') {
       if (value > 0 && value < 1 && !min && !max && unit == '%') {
@@ -99,7 +102,7 @@ class CircleProgressCard extends LitElement {
     min = min ?? 0;
     max = max ?? 100;
 
-    const progress = numericValue != null ? (numericValue - min) / (max - min) : 1;
+    const progress = numericValue != null ? Math.min((numericValue - min) / (max - min), 1) : 1;
     const hideUnit = numericValue == null || valueString;
     const adjustedValue = numericValue != null ? (unit == '%' ? Math.round((numericValue - min) / (max - min) * 100) : Math.round(numericValue)) : undefined;
     valueString = valueString ? `${valueString}` : adjustedValue != null ? `${adjustedValue}` : `${value}`;
@@ -107,7 +110,7 @@ class CircleProgressCard extends LitElement {
     const icon = this._getTemplateOrValue(this._state, this._config.icon) ?? this._state.attributes.icon;
 
     const size = this._getTemplateOrValue(this._state, this._config.size) ?? 100;
-    const strokeSize = this._getTemplateOrValue(this._state, this._config.stroke_size) ?? 4;
+    const strokeSize = this._getTemplateOrValue(this._state, this._config.thickness) ?? 4;
     const iconSize = this._getTemplateOrValue(this._state, this._config.icon_size) ?? 46;
     const fontSize = this._getTemplateOrValue(this._state, this._config.font_size) ?? 16;
 
@@ -119,18 +122,25 @@ class CircleProgressCard extends LitElement {
     const radius = Math.floor(25 - (strokeSize / 2));
     const circumference = radius * 2 * Math.PI;
 
-    const showIcon = (this._getTemplateOrValue(this._state, this._config.show?.icon) ?? !numericValue) && icon;
-    const showValue = this._getTemplateOrValue(this._state, this._config.show?.value) ?? !showIcon;
+    const valuePosition = this._getTemplateOrValue(this._state, this._config.value_position) ?? "inside";
+
+    const showIcon = (this._getTemplateOrValue(this._state, this._config.show?.icon) ?? (!numericValue || valuePosition == 'below')) && icon;
+    const showValue = this._getTemplateOrValue(this._state, this._config.show?.value) ?? (!showIcon || valuePosition == 'below');
     const showTrack = this._getTemplateOrValue(this._state, this._config.show?.track) ?? true;
     const showProgress = this._getTemplateOrValue(this._state, this._config.show?.progress) ?? true;
     const showBackground = this._getTemplateOrValue(this._state, this._config.show?.background) ?? true;
 
+    const animationType = this._getTemplateOrValue(this._state, this._config.animation_type) ?? 'load';
+    const animationTime = this._getTemplateOrValue(this._state, this._config.animation_time) ?? '0.8s';
+
     return html`
     <ha-card style="${showBackground ? '' : 'background: none; box-shadow: none;'}">
       <div class="wrapper" style="
+      --animation-type: animate-${animationType};
+      --animation-time: ${animationTime};
       --stroke-circumference: ${circumference}; 
       --stroke-offset: ${circumference - progress * circumference}; 
-      --stroke-size: ${strokeSize}; 
+      --stroke-width: ${strokeSize}; 
       --progress-color: ${progressColor}; 
       --track-color: ${trackColor}; 
       --text-color: ${textColor}; 
@@ -138,17 +148,24 @@ class CircleProgressCard extends LitElement {
       --size: ${size}%;
       --font-size: ${fontSize}px;">
 
-        <svg viewBox="0 0 50 50"">
-          <circle class="track-bar" cx="25" cy="25" r="${radius}" fill="none" style="${showTrack ? '' : 'display: none;'}"/>
-          <circle class="progress-bar animate-progress" cx="25" cy="25" r="${radius}" fill="none" style="${showProgress ? '' : 'display: none;'}"/>
-          <text x="50%" y="54%" text-anchor="middle" alignment-baseline="middle" dominant-baseline="middle" style="${showValue ? '' : 'display: none;'}">
-            ${valueString}<tspan style="${hideUnit ? 'display: none;' : ''}">${unit}</tspan>
-          </text>
-        </svg>
-        ${showIcon ? html`
-        <div class="icon-wrapper" style="--icon-size: ${iconSize}%;">
-          <ha-icon id="progress-icon" icon="${icon}" style="color: ${iconColor}; --mdc-icon-size: 100%;"></ha-icon>
-        </div>` : ''}
+        <div class="circle-wrapper">
+          <svg viewBox="0 0 50 50" width="100%" height="100%">
+            <circle class="track-bar" cx="25" cy="25" r="${radius}" fill="none" style="${showTrack ? '' : 'display: none;'}"/>
+            <circle class="progress-bar animate" cx="25" cy="25" r="${radius}" fill="none" style="${showProgress ? '' : 'display: none;'}"/>
+            <text x="50%" y="50%" text-anchor="middle" alignment-baseline="middle" dominant-baseline="middle" style="${showValue && valuePosition == 'inside' ? '' : 'display: none;'}">
+              ${valueString}<tspan style="${hideUnit ? 'display: none;' : ''}">${unit}</tspan>
+            </text>
+          </svg>
+          ${showIcon ? html`
+          <div class="icon-wrapper">
+            <ha-icon id="progress-icon" icon="${icon}" style="color: ${iconColor}; --mdc-icon-size: ${iconSize}%;"></ha-icon>
+          </div>` : ''}
+        </div>
+        <svg viewBox="0 0 50 ${fontSize}" class="text-below" style="${showValue && valuePosition == 'below' ? '' : 'display: none;'}">
+            <text x="50%" y="50%" text-anchor="middle" alignment-baseline="middle" dominant-baseline="middle">
+              ${valueString}<tspan style="${hideUnit ? 'display: none;' : ''}">${unit}</tspan>
+            </text>
+          </svg>
       </div>
     </ha-card>
     `;
@@ -193,11 +210,17 @@ class CircleProgressCard extends LitElement {
   static get styles() {
     return css`
       .wrapper {
-        margin: calc((100% - var(--size)) / 2);
+        padding: calc((100% - var(--size)) / 2);
         overflow: hidden;
       }
+      .circle-wrapper {
+        display: flex;
+        width: 100%;
+        height: 100%;
+        position: relative;
+      }
       circle {
-        stroke-width: var(--stroke-size);
+        stroke-width: var(--stroke-width);
       }
       circle.track-bar {
         stroke: var(--track-color);
@@ -207,7 +230,7 @@ class CircleProgressCard extends LitElement {
         transform: rotate(-90deg);
         transform-origin: 50% 50%;
         stroke-linecap: round;
-        transition: stroke-dashoffset 0.5s ease-in-out;
+        transition: all 0.5s ease-in-out;
         stroke-dasharray: var(--stroke-circumference);
         stroke-dashoffset: var(--stroke-offset);
       }
@@ -217,22 +240,36 @@ class CircleProgressCard extends LitElement {
         fill: var(--text-color);
       }
       text {
-        font-size: var(--font-size);
-      }
-      tspan {
-        font-size: calc(0.75 * var(--font-size));
+        font-size: var(--font-size, 16px);
         alignment-baseline: central;
       }
-      @keyframes animate-progress {
+      tspan {
+        font-size: calc(0.75 * var(--font-size, 12px));
+        alignment-baseline: mathematical;
+      }
+      .text-below {
+        margin-top: 10%;
+      }
+      @keyframes animate-load {
         0% {
           stroke-dashoffset: var(--stroke-circumference);
         }
         100% {
-          stroke-dashoffset: var(--stroke-offset);
+          stroke-dashoffset: var(--stroke-offset, 0);
         }
       }
-      circle.animate-progress {
-        animation: animate-progress 0.8s;
+      @keyframes animate-wrap {
+        0% {
+          stroke-dashoffset: var(--stroke-circumference);
+          transform: rotate(270deg);
+        }
+        100% {
+          stroke-dashoffset: 0;
+          transform: rotate(90deg);
+        }
+      }
+      circle.animate {
+        animation: var(--animation-type, animate-load) var(--animationTime, 0.8s);
       }
       .icon-wrapper {
         position: absolute;
@@ -240,8 +277,12 @@ class CircleProgressCard extends LitElement {
         height: 100%;
         top: 0;
         left: 0;
-        padding: calc(50% - var(--icon-size) / 2);
-        box-sizing: border-box;
+        display: flex;
+        align-items: center;
+      }
+      .icon-wrapper ha-icon {
+        display: flex;
+        justify-content: center;
       }
     `;
   }

@@ -234,7 +234,6 @@ class CircleProgressCard extends LitElement {
     return css`
       .wrapper {
         padding: calc((100% - var(--size)) / 2);
-        overflow: hidden;
       }
       .circle-wrapper {
         display: flex;
@@ -260,6 +259,9 @@ class CircleProgressCard extends LitElement {
       circle.progress-bar.shadow {
         -webkit-filter: drop-shadow(0 0px 2px rgba(0, 0, 0, 0.2));
         filter: drop-shadow(rgba(0, 0, 0, 0.2) 0px 0px 2px);
+      }
+      svg {
+        overflow: visible
       }
       path,
       text,

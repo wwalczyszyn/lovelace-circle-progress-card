@@ -41,7 +41,6 @@ const t="undefined"!=typeof window&&null!=window.customElements&&void 0!==window
     `}_evalTemplate(t,e){try{return new Function("states","entity","user","hass","html",`'use strict'; ${e}`).call(this,this.hass.states,t,this.hass.user,this.hass,M)}catch(t){const s=e.length<=100?e.trim():`${e.trim().substring(0,98)}...`;throw t.message=`${t.name}: ${t.message} in '${s}'`,t.name="CircleProgressCardJSTemplateError",t}}_getTemplateOrValue(t,e){if(["number","boolean"].includes(typeof e))return e;if(!e)return e;if("object"==typeof e)return Object.keys(e).forEach((s=>{e[s]=this._getTemplateOrValue(t,e[s])})),e;const s=e.trim();return"[[["===s.substring(0,3)&&"]]]"===s.slice(-3)?this._evalTemplate(t,s.slice(3,-3)):e}_handleClick(t,e,s){s&&(t.stopPropagation(),((t,e,s,i,n)=>{let r;switch(i.action){case"more-info":r=new Event("hass-more-info",{composed:!0}),r.detail={entityId:n},t.dispatchEvent(r);break;case"navigate":if(!i.navigation_path)return;window.history.pushState(null,"",i.navigation_path),r=new Event("location-changed",{composed:!0}),r.detail={replace:!1},window.dispatchEvent(r);break;case"call-service":{if(!i.service)return;const[t,s]=i.service.split(".",2),n=Object.assign({},i.service_data);e.callService(t,s,n);break}case"url":if(!i.url)return;window.location.href=i.url;break;case"fire-dom-event":r=new Event("ll-custom",{composed:!0,bubbles:!0}),r.detail=i,t.dispatchEvent(r)}})(this,this.hass,this._config,this._config.tap_action,e.entity_id||e))}static get styles(){return X`
       .wrapper {
         padding: calc((100% - var(--size)) / 2);
-        overflow: hidden;
       }
       .circle-wrapper {
         display: flex;
@@ -67,6 +66,9 @@ const t="undefined"!=typeof window&&null!=window.customElements&&void 0!==window
       circle.progress-bar.shadow {
         -webkit-filter: drop-shadow(0 0px 2px rgba(0, 0, 0, 0.2));
         filter: drop-shadow(rgba(0, 0, 0, 0.2) 0px 0px 2px);
+      }
+      svg {
+        overflow: visible
       }
       path,
       text,

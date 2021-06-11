@@ -36,6 +36,7 @@ class ShowConfig {
   progress?: boolean;
   track?: boolean;
   background?: boolean;
+  shadow?: boolean;
 }
 
 class CircleProgressCard extends LitElement {
@@ -129,6 +130,7 @@ class CircleProgressCard extends LitElement {
     const showTrack = this._getTemplateOrValue(this._state, this._config.show?.track) ?? true;
     const showProgress = this._getTemplateOrValue(this._state, this._config.show?.progress) ?? true;
     const showBackground = this._getTemplateOrValue(this._state, this._config.show?.background) ?? true;
+    const showShadow = this._getTemplateOrValue(this._state, this._config.show?.shadow) ?? true;
 
     const animationType = this._getTemplateOrValue(this._state, this._config.animation_type) ?? 'load';
     const animationTime = this._getTemplateOrValue(this._state, this._config.animation_time) ?? '0.8s';
@@ -151,7 +153,7 @@ class CircleProgressCard extends LitElement {
         <div class="circle-wrapper">
           <svg viewBox="0 0 50 50" width="100%" height="100%">
             <circle class="track-bar" cx="25" cy="25" r="${radius}" fill="none" style="${showTrack ? '' : 'display: none;'}"/>
-            <circle class="progress-bar animate" cx="25" cy="25" r="${radius}" fill="none" style="${showProgress ? '' : 'display: none;'}"/>
+            <circle class="progress-bar animate ${showShadow ? 'shadow' : ''}" cx="25" cy="25" r="${radius}" fill="none" style="${showProgress ? '' : 'display: none;'}"/>
             <text x="50%" y="50%" text-anchor="middle" alignment-baseline="middle" dominant-baseline="middle" style="${showValue && valuePosition == 'inside' ? '' : 'display: none;'}">
               ${valueString}<tspan style="${hideUnit ? 'display: none;' : ''}">${unit}</tspan>
             </text>
@@ -233,6 +235,10 @@ class CircleProgressCard extends LitElement {
         transition: all 0.5s ease-in-out;
         stroke-dasharray: var(--stroke-circumference);
         stroke-dashoffset: var(--stroke-offset);
+      }
+      circle.progress-bar.shadow {
+        -webkit-filter: drop-shadow(0 0px 2px rgba(0, 0, 0, 0.2));
+        filter: drop-shadow(rgba(0, 0, 0, 0.2) 0px 0px 2px);
       }
       path,
       text,

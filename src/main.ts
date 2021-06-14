@@ -11,14 +11,16 @@ class CardConfig {
   icon?: string;
   unit?: string;
   attribute?: string;
-  value?: number | string;
+  round_precision?: number;
+  value?: number;
   value_position?: string; // inside, below
   min?: number;
   max?: number;
   value_string?: string;
-  thickness?: number | string;
+  thickness?: number;
   size?: number;
   font_size?: number;
+  unit_font_size?: number;
   icon_size?: number;
   animation_type?: string; // load, wrap, none
   animation_time?: string;
@@ -114,9 +116,11 @@ class CircleProgressCard extends LitElement {
     min = min ?? 0;
     max = max ?? 100;
 
+    const roundPrecision = this._getTemplateOrValue(this._state, this._config.round_precision) ?? 0;
+
     const progress = numericValue != null ? Math.min((numericValue - min) / (max - min), 1) : 1;
     const hideUnit = numericValue == null || valueString;
-    const adjustedValue = numericValue != null ? (unit == '%' ? Math.round((numericValue - min) / (max - min) * 100) : Math.round(numericValue)) : undefined;
+    const adjustedValue = numericValue != null ? (unit == '%' ? this._roundValue((numericValue - min) / (max - min) * 100, roundPrecision) : this._roundValue(numericValue, roundPrecision)) : undefined;
     valueString = valueString ? `${valueString}` : adjustedValue != null ? `${adjustedValue}` : `${value}`;
 
     const icon = this._getTemplateOrValue(this._state, this._config.icon) ?? this._state.attributes.icon;
@@ -125,6 +129,7 @@ class CircleProgressCard extends LitElement {
     const strokeSize = this._getTemplateOrValue(this._state, this._config.thickness) ?? 4;
     const iconSize = this._getTemplateOrValue(this._state, this._config.icon_size) ?? 46;
     const fontSize = this._getTemplateOrValue(this._state, this._config.font_size) ?? 16;
+    const unitFontSize = this._getTemplateOrValue(this._state, this._config.unit_font_size) ?? 0.75 * fontSize;
 
     const progressColor = this._getTemplateOrValue(this._state, this._config.colors?.progress) ?? "var(--paper-item-icon-color, #44739e)";
     const trackColor = this._getTemplateOrValue(this._state, this._config.colors?.track) ?? "var(--divider-color, #e8e8e8)";
@@ -162,7 +167,8 @@ class CircleProgressCard extends LitElement {
       --text-color: ${textColor}; 
       --icon-color: ${iconColor};
       --size: ${size}%;
-      --font-size: ${fontSize}px;">
+      --font-size: ${fontSize}px;
+      --unit-font-size: ${unitFontSize}px;">
 
         <div class="circle-wrapper">
           <svg viewBox="0 0 50 50" width="100%" height="100%">
@@ -230,6 +236,11 @@ class CircleProgressCard extends LitElement {
     }
   }
 
+  private _roundValue(value, precision) {
+    const multiplier = Math.pow(10, precision || 0);
+    return Math.round(value * multiplier) / multiplier;
+  }
+
   static get styles() {
     return css`
       .wrapper {
@@ -273,7 +284,7 @@ class CircleProgressCard extends LitElement {
         alignment-baseline: central;
       }
       tspan {
-        font-size: calc(0.75 * var(--font-size, 12px));
+        font-size: var(--unit-font-size, 12px);
         alignment-baseline: mathematical;
       }
       .text-below {

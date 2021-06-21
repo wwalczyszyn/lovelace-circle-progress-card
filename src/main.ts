@@ -180,7 +180,7 @@ class CircleProgressCard extends LitElement {
           </svg>
           ${showIcon ? html`
           <div class="icon-wrapper">
-            <ha-icon id="progress-icon" icon="${icon}" style="color: ${iconColor}; --mdc-icon-size: ${iconSize}%;"></ha-icon>
+            <ha-icon id="progress-icon" icon="${icon}" style="margin: auto; color: ${iconColor}; --mdc-icon-size: ${iconSize}%;"></ha-icon>
           </div>` : ''}
         </div>
         <svg viewBox="0 0 50 ${fontSize}" class="text-below" style="${showValue && valuePosition == 'below' ? '' : 'display: none;'}">

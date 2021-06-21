@@ -29,7 +29,7 @@ const t="undefined"!=typeof window&&null!=window.customElements&&void 0!==window
           </svg>
           ${it?z`
           <div class="icon-wrapper">
-            <ha-icon id="progress-icon" icon="${H}" style="color: ${Z}; --mdc-icon-size: ${J}%;"></ha-icon>
+            <ha-icon id="progress-icon" icon="${H}" style="margin: auto; color: ${Z}; --mdc-icon-size: ${J}%;"></ha-icon>
           </div>`:""}
         </div>
         <svg viewBox="0 0 50 ${G}" class="text-below" style="${nt&&"below"==st?"":"display: none;"}">

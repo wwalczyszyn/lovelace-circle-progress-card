@@ -151,7 +151,10 @@ class CircleProgressCard extends LitElement {
     const animationType = this._getTemplateOrValue(this._state, this._config.animation_type) ?? 'load';
     const animationTime = this._getTemplateOrValue(this._state, this._config.animation_time) ?? '0.8s';
 
-    const hasTapAction = this._config.tap_action && this._config.tap_action?.action !== 'none';
+    if (!this._config.tap_action) {
+      this._config.tap_action = { action: 'more-info' }
+    }
+    const hasTapAction = this._config.tap_action?.action !== 'none';
 
     return html`
     <ha-card style="${showBackground ? '' : 'background: none; box-shadow: none;'} ${hasTapAction ? 'cursor: pointer;' : ''}"

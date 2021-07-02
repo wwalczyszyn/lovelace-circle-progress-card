@@ -151,9 +151,6 @@ class CircleProgressCard extends LitElement {
     const animationType = this._getTemplateOrValue(this._state, this._config.animation_type) ?? 'load';
     const animationTime = this._getTemplateOrValue(this._state, this._config.animation_time) ?? '0.8s';
 
-    if (!this._config.tap_action) {
-      this._config.tap_action = { action: 'more-info' }
-    }
     const hasTapAction = this._config.tap_action?.action !== 'none';
 
     return html`
@@ -235,7 +232,7 @@ class CircleProgressCard extends LitElement {
   private _handleClick(e, entity, hasTapAction) {
     if (hasTapAction) {
       e.stopPropagation();
-      handleClick(this, this.hass, this._config, this._config.tap_action, entity.entity_id || entity);
+      handleClick(this, this.hass, this._config, this._config.tap_action ?? { action: 'more-info' }, entity.entity_id || entity);
     }
   }
 

@@ -173,7 +173,7 @@ class CircleProgressCard extends LitElement {
         <div class="circle-wrapper">
           <svg viewBox="0 0 50 50" width="100%" height="100%">
             <circle class="track-bar" cx="25" cy="25" r="${radius}" fill="none" style="${showTrack ? '' : 'display: none;'}"/>
-            <circle class="progress-bar animate ${showShadow ? 'shadow' : ''}" cx="25" cy="25" r="${radius}" fill="none" style="${showProgress ? '' : 'display: none;'}"/>
+            <circle class="progress-bar animate ${animationType} ${showShadow ? 'shadow' : ''}" cx="25" cy="25" r="${radius}" fill="none" style="${showProgress ? '' : 'display: none;'}"/>
             <text x="50%" y="50%" text-anchor="middle" alignment-baseline="middle" dominant-baseline="middle" style="${showValue && valuePosition == 'inside' ? '' : 'display: none;'}">
               ${valueString}<tspan style="${hideUnit ? 'display: none;' : ''}">${unit}</tspan>
             </text>
@@ -308,8 +308,22 @@ class CircleProgressCard extends LitElement {
           transform: rotate(90deg);
         }
       }
+      @keyframes animate-blink {
+        0% {
+          stroke-opacity: 0.33;
+        }
+        50% {
+          stroke-opacity: 1;
+        }
+        100% {
+          stroke-opacity: 0.33;
+        }
+      }
       circle.animate {
-        animation: var(--animation-type, animate-load) var(--animationTime, 0.8s);
+        animation: var(--animation-type, animate-load) var(--animation-time, 0.8s) ease-in-out;
+      }
+      circle.animate.blink {
+        animation: var(--animation-type, animate-load) var(--animation-time, 0.8s) ease-in-out 0s infinite;
       }
       .icon-wrapper {
         position: absolute;
